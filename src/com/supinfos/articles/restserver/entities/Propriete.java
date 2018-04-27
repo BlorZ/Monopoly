@@ -7,14 +7,18 @@ public class Propriete extends Case{
 	private Long plusValue;
 	private Joueur idJoueur;
 	
-	public Propriete(long idCase, TypeCase typeCase, String _name, Long _prixAchat, Long _loyer,
+	public Propriete(long idCase, TypeCase typeCase, String _nomCase, String _name, Long _prixAchat, Long _loyer,
 			Long _plusValue, Joueur _idJoueur) {
-		super(idCase, typeCase);
+		super(idCase, typeCase, _nomCase);
 		name =  _name;
 		prixAchat = _prixAchat;
 		loyer = _loyer;
 		plusValue = _plusValue;
 		idJoueur = _idJoueur;
+	}
+	
+	public Propriete() {
+		super();
 	}
 	
 	public String getName() {

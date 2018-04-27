@@ -3,11 +3,17 @@ package com.supinfos.articles.restserver.entities;
 public class Case {
 	private long idCase;
 	private TypeCase typeCase;
+	private String nom;
 
-	public Case(long _idCase, TypeCase _typeCase) {
+	public Case(long _idCase, TypeCase _typeCase, String _nom) {
 		super();
 		idCase = _idCase;
 		typeCase = _typeCase;
+		nom = _nom;
+	}
+	
+	public Case() {
+		super();
 	}
 	
 	/**
@@ -37,4 +43,13 @@ public class Case {
 	public void setTypeCase(TypeCase typeCase) {
 		this.typeCase = typeCase;
 	}
+
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+	
 }

@@ -23,6 +23,10 @@ public class Joueur {
     	listeCarte = _listeCarte;
     }
     
+    public Joueur() {
+    	super();
+    }
+    
 	/**
 	 * @return the id
 	 */
