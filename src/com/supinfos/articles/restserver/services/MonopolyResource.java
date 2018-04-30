@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import com.supinfos.articles.restserver.bd.MonopolyBD;
 import com.supinfos.articles.restserver.entities.Case;
 import com.supinfos.articles.restserver.entities.Joueur;
+import com.supinfos.articles.restserver.entities.Nfc;
 import com.supinfos.articles.restserver.entities.Propriete;
 
 @Path("/monopoly")
@@ -164,4 +165,37 @@ public class MonopolyResource {
 		//traitement coté propriete
 		prop.setJoueur(joueur);
 	}
+	
+	@GET
+	@Path("/readNfc")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String readNfc() {
+		String result = "";
+		int retour = 0;
+		
+		try {
+			retour = Nfc.start();
+		} catch (IOException e) {
+			retour = 0;
+			e.printStackTrace();
+		}
+		
+		try {
+			result = Nfc.read();
+		} catch (IOException e) {
+			retour = 0;
+			e.printStackTrace();
+		}
+		
+		try {
+			retour = Nfc.stop();
+		} catch (IOException e) {
+			retour = 0;
+			e.printStackTrace();
+		}
+		
+		//result = Integer.toUnsignedString(retour);
+		return result;
+	}
+	
 }
