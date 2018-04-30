@@ -1,19 +1,21 @@
 package com.supinfos.articles.restserver.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Joueur {
 
-	private long id;
+	private int id;
     private String nom;
     private Pion pion;
-    private List<Propriete> listePropriete;
+    private ArrayList<Propriete> listePropriete;
     private Long solde;
     private int position;
     private List<Carte> listeCarte;
+    private String nfcTag;
     
-    public Joueur(long _id, String _nom, Pion _pion, List<Propriete> _listePropriete,
-    		Long _solde, int _position, List<Carte> _listeCarte) {
+    public Joueur(int _id, String _nom, Pion _pion, ArrayList<Propriete> _listePropriete,
+    		Long _solde, int _position, List<Carte> _listeCarte, String _nfcTag) {
     	id = _id;
     	nom = _nom;
     	pion = _pion; 
@@ -21,6 +23,7 @@ public class Joueur {
     	solde = _solde;
     	position = _position;
     	listeCarte = _listeCarte;
+    	nfcTag = _nfcTag;
     }
     
     public Joueur() {
@@ -30,14 +33,14 @@ public class Joueur {
 	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 	
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	
@@ -73,15 +76,19 @@ public class Joueur {
 	/**
 	 * @return the listePropriete
 	 */
-	public List<Propriete> getListePropriete() {
+	public ArrayList<Propriete> getListePropriete() {
 		return listePropriete;
 	}
 	
 	/**
 	 * @param listePropriete the listePropriete to set
 	 */
-	public void setListePropriete(List<Propriete> listePropriete) {
+	public void setListePropriete(ArrayList<Propriete> listePropriete) {
 		this.listePropriete = listePropriete;
+	}
+	
+	public void addPropriete(Propriete prop) {
+		this.listePropriete.add(prop);
 	}
 	
 	/**
@@ -124,5 +131,9 @@ public class Joueur {
 	 */
 	public void setListeCarte(List<Carte> listeCarte) {
 		this.listeCarte = listeCarte;
+	}
+	
+	public String getNfcTag() {
+		return this.nfcTag;
 	}
 }

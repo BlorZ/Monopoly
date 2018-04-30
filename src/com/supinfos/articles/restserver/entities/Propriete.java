@@ -5,10 +5,10 @@ public class Propriete extends Case{
 	private Long prixAchat;
 	private Long loyer;
 	private Long plusValue;
-	private Joueur idJoueur;
+	private int idJoueur;
 	
 	public Propriete(long idCase, TypeCase typeCase, String _nomCase, String _name, Long _prixAchat, Long _loyer,
-			Long _plusValue, Joueur _idJoueur) {
+			Long _plusValue, int _idJoueur) {
 		super(idCase, typeCase, _nomCase);
 		name =  _name;
 		prixAchat = _prixAchat;
@@ -53,11 +53,11 @@ public class Propriete extends Case{
 		this.plusValue = plusValue;
 	}
 	
-	public Joueur getIdJoueur() {
+	public int getIdJoueur() {
 		return idJoueur;
 	}
 	
-	public void setJoueur(Joueur idJoueur) {
+	public void setJoueur(int idJoueur) {
 		this.idJoueur = idJoueur;
 	}
 	

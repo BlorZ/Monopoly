@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -34,9 +35,9 @@ public class MonopolyResource {
 
 	@GET
 	@Path("/joueurs/{id}")
-	public Response getJoueur(@PathParam("id") Long idJoueur) {
+	public Response getJoueur(@PathParam("id") int idJoueur) {
 		for (Joueur current : MonopolyBD.getJoueurs()) {
-			if (idJoueur.equals(current.getId())) {
+			if (idJoueur == current.getId()) {
 				return Response.ok(current)
 						.header("Access-Control-Allow-Origin", "*")
 						.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
@@ -126,7 +127,7 @@ public class MonopolyResource {
 		return null;
 	}
 
-	public String readNFC() throws IOException {
+	/*public String readNFC() throws IOException {
 		String output = null;
 		String uri = "http://localhost:8080/CustomerService/rest/customers/1";
 		URL url = new URL(uri);
@@ -142,11 +143,12 @@ public class MonopolyResource {
             connection.disconnect();
 		}
 		return output;
-	}
+	}*/
 	
-	@GET
+	@PUT
 	@Path("/achat")
-	public void achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") Long idJoueur) {
+	//Permet d'acheter une propriete si on a assez d'argent, que la prop est a vendre et qu'on passe sa carte
+	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) {
 		Joueur joueur = new Joueur();
 		Propriete prop = new Propriete();
 		for(Propriete p : MonopolyBD.getProprietes()) {
@@ -155,15 +157,30 @@ public class MonopolyResource {
 			}
 		}
 		for(Joueur j : MonopolyBD.getJoueurs()) {
-			if(idJoueur.equals(j.getId())) {
+			if(idJoueur==j.getId()) {
 				joueur = j;
 			}
 		}
-		//traitement coté joueur
-		joueur.setSolde(joueur.getSolde()-prop.getPrixAchat());
-		joueur.getListePropriete().add(prop);
-		//traitement coté propriete
-		prop.setJoueur(joueur);
+		
+		if(prop.getIdJoueur() == 0 && joueur.getSolde() >= prop.getPrixAchat()) {
+			
+			//Lecture carte nfc
+			if (readNfc().equals(joueur.getNfcTag())) {
+			
+			
+				//traitement coté joueur
+				joueur.setSolde(joueur.getSolde()-prop.getPrixAchat());
+				joueur.addPropriete(prop);
+				//traitement coté propriete
+				prop.setJoueur(joueur.getId());
+				
+				return Response.ok().build();
+			}
+		}
+		System.out.println("echech achat : "+prop.getIdJoueur()+" "+joueur.getSolde() + " " +readNfc());
+		return Response.notModified().build();
+		
+		
 	}
 	
 	@GET
