@@ -3,10 +3,14 @@ package com.supinfos.articles.restserver.bd;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.supinfos.articles.restserver.entities.Carte;
 import com.supinfos.articles.restserver.entities.Case;
 import com.supinfos.articles.restserver.entities.Joueur;
+import com.supinfos.articles.restserver.entities.Meteo;
 import com.supinfos.articles.restserver.entities.Pion;
+import com.supinfos.articles.restserver.entities.Plateau;
 import com.supinfos.articles.restserver.entities.Propriete;
+import com.supinfos.articles.restserver.entities.TypeCarte;
 import com.supinfos.articles.restserver.entities.TypeCase;
 
 public class MonopolyBD {
@@ -14,6 +18,9 @@ public class MonopolyBD {
 	public static List<Joueur> listJoueur = new ArrayList<>();
 	public static List<Propriete> listProp = new ArrayList<>();
 	public static List<Case> listCase = new ArrayList<>();
+	public static final List<Carte> cartesChance = new ArrayList<>();
+	public static final List<Carte> cartesCaisseCommunaute = new ArrayList<>();
+	public static Plateau plateau = new Plateau(Meteo.SOLEIL, 0L);
 
 	static {
 		//initialisation des joueurs
@@ -69,6 +76,16 @@ public class MonopolyBD {
 		listCase.add(new Case(35, TypeCase.SAFE, "Case safe"));
 		listCase.add(new Case(36, TypeCase.CASE_CHANCE, "Case Chance"));
 		listCase.add(new Case(38, TypeCase.IMPOT_POLUTION, "Impôt de Polution"));
+		
+		//contenu des cartes chances
+		cartesChance.add(new Carte(1L, "Sortez de prison", TypeCarte.CHANCE));
+		cartesChance.add(new Carte(2L, "Votre campagne de publicité rapporte 5000 watts", TypeCarte.CHANCE));
+		cartesChance.add(new Carte(3L, "Un incident s'est produit dans l'une de vos propriétés, payez 7500 watts de réparation", TypeCarte.CHANCE));
+		
+		//contenu des cartes caisse de communauté
+		cartesCaisseCommunaute.add(new Carte(1L, "Allez à la case départ!", TypeCarte.CAISSE_COMMUNAUTE));
+		cartesCaisseCommunaute.add(new Carte(2L, "Allez à la case prison!", TypeCarte.CAISSE_COMMUNAUTE));
+		cartesCaisseCommunaute.add(new Carte(3L, "Sortez de prison", TypeCarte.CAISSE_COMMUNAUTE));
 	}
 
 	public static List<Joueur> getJoueurs() {

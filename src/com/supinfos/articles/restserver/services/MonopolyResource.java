@@ -1,11 +1,5 @@
 package com.supinfos.articles.restserver.services;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -16,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.supinfos.articles.restserver.bd.MonopolyBD;
+import com.supinfos.articles.restserver.entities.Carte;
 import com.supinfos.articles.restserver.entities.Case;
 import com.supinfos.articles.restserver.entities.Joueur;
 import com.supinfos.articles.restserver.entities.Nfc;
@@ -147,8 +142,8 @@ public class MonopolyResource {
 	
 	@PUT
 	@Path("/achat")
-	//Permet d'acheter une propriete si on a assez d'argent, que la prop est a vendre et qu'on passe sa carte
-	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) {
+	/**Permet d'acheter une propriete si on a assez d'argent, que la prop est a vendre et qu'on passe sa carte*/
+	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		Propriete prop = new Propriete();
 		for(Propriete p : MonopolyBD.getProprietes()) {
@@ -177,42 +172,110 @@ public class MonopolyResource {
 				return Response.ok().build();
 			}
 		}
-		System.out.println("echech achat : "+prop.getIdJoueur()+" "+joueur.getSolde() + " " +readNfc());
+		System.out.println("Echec achat : "+prop.getIdJoueur()+" "+joueur.getSolde() + " " +readNfc());
 		return Response.notModified().build();
-		
-		
 	}
 	
 	@GET
 	@Path("/readNfc")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String readNfc() {
+	public String readNfc() throws Exception {
 		String result = "";
 		int retour = 0;
 		
 		try {
 			retour = Nfc.start();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			retour = 0;
 			e.printStackTrace();
+			throw new Exception("Le lecteur NFC n'a pas démarré correctement.");
 		}
 		
 		try {
 			result = Nfc.read();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			retour = 0;
 			e.printStackTrace();
+			throw new Exception("Erreur lors de la lecture de la carte RFID");
 		}
 		
 		try {
 			retour = Nfc.stop();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			retour = 0;
 			e.printStackTrace();
+			throw new Exception("Erreur lors de la fermeture du lecteur NFC");
 		}
 		
-		//result = Integer.toUnsignedString(retour);
+		result = Integer.toUnsignedString(retour);
 		return result;
+	}
+	
+	@GET
+	@Path("deplacement/{idJoueur}")
+	public void deplacement(@PathParam("idJoueur") Long idJoueur, @QueryParam("resultDes") Integer resultDes) {
+		Joueur joueur = null;
+		for(Joueur j : MonopolyBD.getJoueurs()) {
+			if(idJoueur==j.getId()) {
+				joueur = j;
+			}
+		}
+		joueur.setPosition(joueur.getPosition() + resultDes);
+	}
+	
+	@GET
+	@Path("case-speciale/{idCase}")
+	public void gestionCaseSpeciale(@PathParam("idCase") Long idCase, @QueryParam("idJoueur") Integer idJoueur) throws Exception {
+		Case positionCase = new Case();
+		Joueur joueur = new Joueur();
+		for(Case current : MonopolyBD.listCase) {
+			if(idCase.equals(current.getIdCase())) {
+				positionCase = current;
+			}
+		}
+
+		for(Joueur current : MonopolyBD.listJoueur) {
+			if(idJoueur.equals(current.getId())) {
+				joueur = current;
+			}
+		}
+		switch(positionCase.getTypeCase()) {
+			case DEPART: 
+				joueur.setSolde(joueur.getSolde() + 20000L);
+				for(Propriete p : joueur.getListePropriete()) {
+					joueur.setSolde(joueur.getSolde() - p.getLoyer());
+				}
+				break;
+			case CASE_CHANCE:
+				int random = (int) (Math.random() * MonopolyBD.cartesChance.size());
+				Carte carte = MonopolyBD.cartesChance.get(random);
+				if(carte.getContenu() == "Sortez de prison") {
+					joueur.getListeCarte().add(carte);
+				}
+				else if(carte.getContenu() == "Votre campagne de publicité rapporte 5000 watts") {
+					joueur.setSolde(joueur.getSolde() + 5000L);
+				}
+				else if(carte.getContenu() == "Un incident s'est produit dans l'une de vos propriétés, payez 7500 watts de réparation") {
+					joueur.setSolde(joueur.getSolde() - 7500L);
+					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 7500L);
+				}
+				break;
+			case CASE_CAISSE_COMMUNAUTE:
+				random = (int) (Math.random() * MonopolyBD.cartesCaisseCommunaute.size());
+				carte = MonopolyBD.cartesCaisseCommunaute.get(random);
+				if(carte.getContenu() == "Allez à la case départ!") {
+					joueur.setPosition(0);
+				}
+				else if(carte.getContenu() == "Allez à la case prison!") {
+					joueur.setPosition(10);
+				}
+				else if(carte.getContenu() == "Sortez de prison") {
+					joueur.getListeCarte().add(carte);
+				}
+				break;
+		default:
+			throw new Exception("Cette case n'existe pas");
+		}
 	}
 	
 }

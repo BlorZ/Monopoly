@@ -4,6 +4,12 @@ public class Plateau {
 	private Meteo meteo;
 	private Long pot;
 	
+	public Plateau(Meteo meteo, Long pot) {
+		super();
+		this.meteo = meteo;
+		this.pot = pot;
+	}
+
 	public Plateau(){
 		super();
 	}

@@ -5,6 +5,13 @@ public class Carte {
 	private String contenu;
 	private TypeCarte typeCarte;
 	
+	public Carte(long idCarte, String contenu, TypeCarte typeCarte) {
+		super();
+		this.idCarte = idCarte;
+		this.contenu = contenu;
+		this.typeCarte = typeCarte;
+	}
+
 	public Carte() {
 		super();
 	}
