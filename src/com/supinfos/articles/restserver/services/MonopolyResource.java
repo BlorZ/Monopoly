@@ -1,7 +1,6 @@
 package com.supinfos.articles.restserver.services;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -140,7 +139,7 @@ public class MonopolyResource {
 		return output;
 	}*/
 	
-	@PUT
+	@GET
 	@Path("/achat")
 	/**Permet d'acheter une propriete si on a assez d'argent, que la prop est a vendre et qu'on passe sa carte*/
 	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
@@ -213,7 +212,10 @@ public class MonopolyResource {
 	
 	@GET
 	@Path("deplacement/{idJoueur}")
-	public void deplacement(@PathParam("idJoueur") Long idJoueur, @QueryParam("resultDes") Integer resultDes) {
+	public void deplacement(@PathParam("idJoueur") Long idJoueur, @QueryParam("resultDes") Integer resultDes) throws Exception {
+		if(resultDes < 2 || resultDes > 12) {
+			throw new Exception("Il est impossible de faire ce résultats avec 2 dés!!");
+		}
 		Joueur joueur = null;
 		for(Joueur j : MonopolyBD.getJoueurs()) {
 			if(idJoueur==j.getId()) {
@@ -273,9 +275,37 @@ public class MonopolyResource {
 					joueur.getListeCarte().add(carte);
 				}
 				break;
+			case ALLER_PRISON: 
+				joueur.setPosition(10);
+				break;
+			case BONUS_PRIME_ETAT:
+				joueur.setSolde(joueur.getSolde() + 5000L);
+				break;
+			case BONUS_PRIX_NOBEL:
+				joueur.setSolde(joueur.getSolde() + 10000L);
+				break;
+			case IMPOT_POLUTION:
+				joueur.setSolde(joueur.getSolde() - 7500L);
+				MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 7500L);
+				break;
+			case PARC_GRATUIT:
+				joueur.setSolde(joueur.getSolde() + MonopolyBD.plateau.getPot());
+				MonopolyBD.plateau.setPot(0L);
+				break;
+			case SAFE: 
+				break;
+			case TAXE_ENERGIE: 
+				joueur.setSolde(joueur.getSolde() - 5000L);
+				MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 5000L);
+				break;
+			case PRISON: 
+				//reste a faire
+				// a voir comment on gere le nombre de tour dans le back
+				// comment on gere les dés pour voir si c'est un double
+				// Je pense il faut faire un WS a part pour cette case => le nombre de chaque dé en entrée + le nombre de tour deja en prison 
+				break;
 		default:
 			throw new Exception("Cette case n'existe pas");
 		}
 	}
-	
 }
