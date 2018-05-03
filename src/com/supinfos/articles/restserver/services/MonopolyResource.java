@@ -212,7 +212,7 @@ public class MonopolyResource {
 	
 	@GET
 	@Path("deplacement/{idJoueur}")
-	public void deplacement(@PathParam("idJoueur") Long idJoueur, @QueryParam("resultDes") Integer resultDes) throws Exception {
+	public Response deplacement(@PathParam("idJoueur") Long idJoueur, @QueryParam("resultDes") Integer resultDes) throws Exception {
 		if(resultDes < 2 || resultDes > 12) {
 			throw new Exception("Il est impossible de faire ce résultats avec 2 dés!!");
 		}
@@ -222,12 +222,16 @@ public class MonopolyResource {
 				joueur = j;
 			}
 		}
-		joueur.setPosition(joueur.getPosition() + resultDes);
+		joueur.setPosition((joueur.getPosition() + resultDes) % 40);
+		return Response.noContent()
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 	}
 	
 	@GET
 	@Path("case-speciale/{idCase}")
-	public void gestionCaseSpeciale(@PathParam("idCase") Long idCase, @QueryParam("idJoueur") Integer idJoueur) throws Exception {
+	public Response gestionCaseSpeciale(@PathParam("idCase") Long idCase, @QueryParam("idJoueur") Integer idJoueur) throws Exception {
 		Case positionCase = new Case();
 		Joueur joueur = new Joueur();
 		for(Case current : MonopolyBD.listCase) {
@@ -307,5 +311,19 @@ public class MonopolyResource {
 		default:
 			throw new Exception("Cette case n'existe pas");
 		}
+		return Response.noContent()
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 	}
+	
+	@GET
+	@Path("plateau")
+	public Response getPlateau() {
+		return Response.ok(MonopolyBD.plateau)
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+	}
+	
 }
