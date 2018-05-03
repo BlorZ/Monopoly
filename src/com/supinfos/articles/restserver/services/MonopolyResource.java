@@ -54,7 +54,7 @@ public class MonopolyResource {
 	@GET
 	@Path("/cases")
 	public Response getCase(){
-		return Response.ok(MonopolyBD.getCases())
+		return Response.ok(MonopolyBD.getAllCases())
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();

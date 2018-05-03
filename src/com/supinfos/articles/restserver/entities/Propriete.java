@@ -1,16 +1,16 @@
 package com.supinfos.articles.restserver.entities;
 
 public class Propriete extends Case{
-	private String name;
+	private String nomProp;
 	private Long prixAchat;
 	private Long loyer;
 	private Long plusValue;
 	private int idJoueur;
 	
-	public Propriete(long idCase, TypeCase typeCase, String _nomCase, String _name, Long _prixAchat, Long _loyer,
+	public Propriete(long idCase, TypeCase typeCase, String _nomCase, String _nomProp, Long _prixAchat, Long _loyer,
 			Long _plusValue, int _idJoueur) {
 		super(idCase, typeCase, _nomCase);
-		name =  _name;
+		nomProp =  _nomProp;
 		prixAchat = _prixAchat;
 		loyer = _loyer;
 		plusValue = _plusValue;
@@ -22,11 +22,11 @@ public class Propriete extends Case{
 	}
 	
 	public String getName() {
-		return name;
+		return nomProp;
 	}
 	
 	public void setName(String name) {
-		this.name = name;
+		this.nomProp = name;
 	}
 	
 	public Long getPrixAchat() {
