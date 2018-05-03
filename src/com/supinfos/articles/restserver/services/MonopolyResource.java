@@ -29,7 +29,7 @@ public class MonopolyResource {
 
 	@GET
 	@Path("/joueurs/{id}")
-	public Response getJoueur(@PathParam("id") int idJoueur) {
+	public Response getJoueur(@PathParam("id") int idJoueur) throws Exception {
 		for (Joueur current : MonopolyBD.getJoueurs()) {
 			if (idJoueur == current.getId()) {
 				return Response.ok(current)
@@ -38,7 +38,7 @@ public class MonopolyResource {
 						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 			}
 		}
-		return null;
+		throw new Exception("Ce joueur n'existe pas!");
 	}
 
 	@GET
@@ -61,7 +61,7 @@ public class MonopolyResource {
 
 	@GET
 	@Path("/cases/{id}")
-	public Response getCase(@PathParam("id") Long idCase){
+	public Response getCase(@PathParam("id") Long idCase) throws Exception{
 		for (Case current : MonopolyBD.getCases()) {
 			if (idCase.equals(current.getIdCase())) {
 				return Response.ok(current)
@@ -70,12 +70,12 @@ public class MonopolyResource {
 						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 			}
 		}
-		return null;
+		throw new Exception("Cette case n'existe pas!");
 	}
 
 	@GET
 	@Path("/proprietes/{nom}")
-	public Response getPropriete(@PathParam("nom") final String nom) {
+	public Response getPropriete(@PathParam("nom") final String nom) throws Exception {
 		for (Propriete current : MonopolyBD.getProprietes()) {
 			if (nom.equals(current.getName())) {
 				return Response.ok(current)
@@ -84,12 +84,12 @@ public class MonopolyResource {
 						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 			}
 		}
-		return null;
+		throw new Exception("Cette propriete n'existe pas!");
 	}
 
 	@GET
 	@Path("/proprietes/updateplusvalue")
-	public Response updatePlusValuePropriete(@QueryParam("nom") String nom, @QueryParam("plusValue") Long plusValue) {
+	public Response updatePlusValuePropriete(@QueryParam("nom") String nom, @QueryParam("plusValue") Long plusValue) throws Exception {
 
 		for (Propriete current : MonopolyBD.getProprietes()) {
 			if (nom.equals(current.getName())) {
@@ -101,12 +101,13 @@ public class MonopolyResource {
 						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 			}
 		}
-		return null;
+		throw new Exception("Cette propriete n'existe pas!");
+		
 	}
 
 	@GET
 	@Path("/proprietes/updateloyer")
-	public Response updateLoyerPropriete(@QueryParam("nom") String nom, @QueryParam("loyer") Long loyer) {
+	public Response updateLoyerPropriete(@QueryParam("nom") String nom, @QueryParam("loyer") Long loyer) throws Exception {
 
 		for (Propriete current : MonopolyBD.getProprietes()) {
 			if (nom.equals(current.getName())) {
@@ -118,27 +119,9 @@ public class MonopolyResource {
 						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 			}
 		}
-		return null;
+		throw new Exception("Cette propriete n'existe pas!");
 	}
 
-	/*public String readNFC() throws IOException {
-		String output = null;
-		String uri = "http://localhost:8080/CustomerService/rest/customers/1";
-		URL url = new URL(uri);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("GET");
-		connection.setRequestProperty("Accept", "text/plain");
-		if(connection.getResponseCode() != 200) {
-			InputStreamReader in = new InputStreamReader(connection.getInputStream());
-			BufferedReader br = new BufferedReader(in);
-            while ((output = br.readLine()) != null) {
-                System.out.println(output);
-            }
-            connection.disconnect();
-		}
-		return output;
-	}*/
-	
 	@GET
 	@Path("/achat")
 	/**Permet d'acheter une propriete si on a assez d'argent, que la prop est a vendre et qu'on passe sa carte*/
