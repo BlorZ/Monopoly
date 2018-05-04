@@ -1,5 +1,7 @@
 package com.supinfos.articles.restserver.entities;
 
+import java.util.List;
+
 public class Propriete extends Case{
 	private String nomProp;
 	private Long prixAchat;
@@ -8,8 +10,8 @@ public class Propriete extends Case{
 	private int idJoueur;
 	
 	public Propriete(long idCase, TypeCase typeCase, String _nomCase, String _nomProp, Long _prixAchat, Long _loyer,
-			Long _plusValue, int _idJoueur) {
-		super(idCase, typeCase, _nomCase);
+			Long _plusValue, int _idJoueur, List<Joueur> _joueursSurCase) {
+		super(idCase, typeCase, _nomCase, _joueursSurCase);
 		nomProp =  _nomProp;
 		prixAchat = _prixAchat;
 		loyer = _loyer;

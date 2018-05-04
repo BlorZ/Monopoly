@@ -189,7 +189,7 @@ public class MonopolyResource {
 			throw new Exception("Erreur lors de la fermeture du lecteur NFC");
 		}
 		
-		result = Integer.toUnsignedString(retour);
+		//result = Integer.toUnsignedString(retour); ne pas decommenter
 		return result;
 	}
 	
