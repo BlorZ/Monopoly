@@ -61,9 +61,9 @@ public class MonopolyResource {
 
 	@GET
 	@Path("/cases/{id}")
-	public Response getCase(@PathParam("id") Long idCase) throws Exception{
+	public Response getCase(@PathParam("id") int idCase) throws Exception{
 		for (Case current : MonopolyBD.getCases()) {
-			if (idCase.equals(current.getIdCase())) {
+			if (idCase==current.getIdCase()) {
 				return Response.ok(current)
 						.header("Access-Control-Allow-Origin", "*")
 						.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
@@ -161,7 +161,7 @@ public class MonopolyResource {
 	@GET
 	@Path("/readNfc")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String readNfc() throws Exception {
+	public Response readNfc() throws Exception {
 		String result = "";
 		int retour = 0;
 		
@@ -172,6 +172,8 @@ public class MonopolyResource {
 			e.printStackTrace();
 			throw new Exception("Le lecteur NFC n'a pas démarré correctement.");
 		}
+		
+		Thread.sleep(5000);
 		
 		try {
 			result = Nfc.read();
@@ -190,12 +192,14 @@ public class MonopolyResource {
 		}
 		
 		//result = Integer.toUnsignedString(retour); ne pas decommenter
-		return result;
+		//return result;
+		return Response.ok(result)
+				.header("Access-Control-Allow-Origin", "*").build();
 	}
 	
 	@GET
-	@Path("deplacement/{idJoueur}")
-	public Response deplacement(@PathParam("idJoueur") Long idJoueur, @QueryParam("resultDes") Integer resultDes) throws Exception {
+	@Path("deplacement/")
+	public Response deplacement(@PathParam("idJoueur") int idJoueur, @QueryParam("resultDes") int resultDes) throws Exception {
 		if(resultDes < 2 || resultDes > 12) {
 			throw new Exception("Il est impossible de faire ce résultats avec 2 dés!!");
 		}
@@ -206,6 +210,11 @@ public class MonopolyResource {
 			}
 		}
 		joueur.setPosition((joueur.getPosition() + resultDes) % 40);
+		
+		//Ajout joueur sur la case pour affichage sur Front
+		Case dest = MonopolyBD.getCaseById((joueur.getPosition() + resultDes) % 40);
+		dest.addJoueur(joueur);
+		//
 		return Response.noContent()
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")

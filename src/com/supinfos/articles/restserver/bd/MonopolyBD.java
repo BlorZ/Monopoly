@@ -152,4 +152,8 @@ public class MonopolyBD {
 	public static List<Case> getAllCases(){
 		return toutesLesCases;
 	}
+	
+	public static Case getCaseById(int id) {
+		return toutesLesCases.get(id);
+	}
 }
