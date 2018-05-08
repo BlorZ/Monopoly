@@ -24,7 +24,9 @@ public enum TypeCase {
 	/** 1ere case qui rapporte de l'argent */
 	BONUS_PRIME_ETAT(11),
 	/** 2e case qui rapporte de l'argent */
-	BONUS_PRIX_NOBEL(12);
+	BONUS_PRIX_NOBEL(12),
+	/** case prison mais juste la visite */
+	VISITE_PRISON(13);
 	
 	private int typeCase;
 	
