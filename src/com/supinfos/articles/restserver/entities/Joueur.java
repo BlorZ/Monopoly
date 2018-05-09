@@ -13,9 +13,10 @@ public class Joueur {
     private int position;
     private List<Carte> listeCarte;
     private String nfcTag;
+    private int nbTourPrison;
     
     public Joueur(int _id, String _nom, Pion _pion, ArrayList<Propriete> _listePropriete,
-    		Long _solde, int _position, List<Carte> _listeCarte, String _nfcTag) {
+    		Long _solde, int _position, List<Carte> _listeCarte, String _nfcTag, int _nbTourPrison) {
     	id = _id;
     	nom = _nom;
     	pion = _pion; 
@@ -24,6 +25,7 @@ public class Joueur {
     	position = _position;
     	listeCarte = _listeCarte;
     	nfcTag = _nfcTag;
+    	nbTourPrison = _nbTourPrison;
     }
     
     public Joueur() {
@@ -135,5 +137,13 @@ public class Joueur {
 	
 	public String getNfcTag() {
 		return this.nfcTag;
+	}
+
+	public int getNbTourPrison() {
+		return nbTourPrison;
+	}
+
+	public void setNbTourPrison(int nbTourPrison) {
+		this.nbTourPrison = nbTourPrison;
 	}
 }
