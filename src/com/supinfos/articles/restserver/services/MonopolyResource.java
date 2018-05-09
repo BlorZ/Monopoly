@@ -128,6 +128,7 @@ public class MonopolyResource {
 	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		Propriete prop = new Propriete();
+		String carte = "";
 		for(Propriete p : MonopolyBD.getProprietes()) {
 			if(idCase.equals(p.getIdCase())) {
 				prop = p;
@@ -142,7 +143,10 @@ public class MonopolyResource {
 		if(prop.getIdJoueur() == 0 && joueur.getSolde() >= prop.getPrixAchat()) {
 			
 			//Lecture carte nfc
-			if (readNfc().equals(joueur.getNfcTag())) {
+			carte = readNfc().getEntity().toString();
+			//System.out.println(carte);
+			
+			if (carte.equals(joueur.getNfcTag())) {
 			
 			
 				//traitement coté joueur
@@ -154,7 +158,7 @@ public class MonopolyResource {
 				return Response.ok().build();
 			}
 		}
-		System.out.println("Echec achat : "+prop.getIdJoueur()+" "+joueur.getSolde() + " " +readNfc());
+		System.out.println("Echec achat : "+prop.getIdJoueur()+" "+joueur.getSolde() + " " +carte);
 		return Response.notModified().build();
 	}
 	
