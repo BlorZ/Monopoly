@@ -175,6 +175,7 @@ public class MonopolyResource {
 	@GET
 	@Path("/deplacement")
 	public Response deplacement(@QueryParam("idJoueur") long idJoueur, @QueryParam("resultDes") int resultDes) throws Exception {
+		int newPos = 0;
 		if(resultDes < 2 || resultDes > 12) {
 			throw new Exception("Il est impossible de faire ce résultats avec 2 dés!!");
 		}
@@ -184,12 +185,16 @@ public class MonopolyResource {
 				joueur = j;
 			}
 		}
-		joueur.setPosition((joueur.getPosition() + resultDes) % 40);
 		
-		//Ajout joueur sur la case pour affichage sur Front
+		//Ajout pour mettre joueur sur case
 		Case dest = MonopolyBD.getCaseById((joueur.getPosition() + resultDes) % 40);
 		dest.addJoueur(joueur);
-		return Response.noContent()
+		
+		
+		joueur.setPosition((joueur.getPosition() + resultDes) % 40);
+		
+
+		return Response.ok()
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
