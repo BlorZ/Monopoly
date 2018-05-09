@@ -100,12 +100,9 @@ public class MonopolyResource {
 	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		Propriete prop = new Propriete();
-<<<<<<< HEAD
 		String carte = "";
-		for(Propriete p : MonopolyBD.getProprietes()) {
-=======
+		
 		for(Case p : MonopolyBD.getAllCases()) {
->>>>>>> branch 'master' of https://github.com/BlorZ/Monopoly.git
 			if(idCase.equals(p.getIdCase())) {
 				prop = (Propriete) p;
 			}
@@ -133,18 +130,15 @@ public class MonopolyResource {
 				return Response.ok().build();
 			}
 		}
-<<<<<<< HEAD
-		System.out.println("Echec achat : "+prop.getIdJoueur()+" "+joueur.getSolde() + " " +carte);
+		
 		return Response.notModified().build();
-=======
-		throw new Exception("Erreur lors de l'achat de la propriété");
->>>>>>> branch 'master' of https://github.com/BlorZ/Monopoly.git
+		
 	}
 	
 	@GET
 	@Path("/readNfc")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String readNfc() throws Exception {
+	public Response readNfc() throws Exception {
 		String result = "";
 		int retour = 0;
 		
@@ -175,7 +169,7 @@ public class MonopolyResource {
 		}
 		System.out.println(retour);
 		//result = Integer.toUnsignedString(retour); ne pas decommenter
-		return result;
+		return Response.ok(result).build();
 	}
 	
 	@GET
