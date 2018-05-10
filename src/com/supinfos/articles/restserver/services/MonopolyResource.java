@@ -169,13 +169,14 @@ public class MonopolyResource {
 		}
 		System.out.println(retour);
 		//result = Integer.toUnsignedString(retour); ne pas decommenter
-		return Response.ok(result).build();
+		return Response.ok(result)
+				.header("Access-Control-Allow-Origin", "*")
+				.build();
 	}
 	
 	@GET
 	@Path("/deplacement")
 	public Response deplacement(@QueryParam("idJoueur") long idJoueur, @QueryParam("resultDes") int resultDes) throws Exception {
-		int newPos = 0;
 		if(resultDes < 2 || resultDes > 12) {
 			throw new Exception("Il est impossible de faire ce résultats avec 2 dés!!");
 		}
@@ -186,12 +187,12 @@ public class MonopolyResource {
 			}
 		}
 		
-		//Ajout pour mettre joueur sur case
-		Case dest = MonopolyBD.getCaseById((joueur.getPosition() + resultDes) % 40);
-		dest.addJoueur(joueur);
-		
+		MonopolyBD.getCaseById(joueur.getPosition()).removeJoueur(joueur);
 		
 		joueur.setPosition((joueur.getPosition() + resultDes) % 40);
+		//Ajout pour mettre joueur sur case
+		Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
+		dest.addJoueur(joueur);
 		
 
 		return Response.ok()
