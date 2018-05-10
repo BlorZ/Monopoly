@@ -23,13 +23,13 @@ public class MonopolyBD {
 
 	static {
 		//initialisation des joueurs
-		listJoueur.add(new Joueur(1, "Micro onde", Pion.MICRO_ONDE, new ArrayList<>(), 10000L,
+		listJoueur.add(new Joueur(1, "Micro onde", Pion.MICRO_ONDE, new ArrayList<>(), 60000L,
 				0, new ArrayList<>(),"DE 56 56 FF", 0));
-		listJoueur.add(new Joueur(2, "Grille pain", Pion.GRILLE_PAIN, new ArrayList<>(), 0L,
+		listJoueur.add(new Joueur(2, "Grille pain", Pion.GRILLE_PAIN, new ArrayList<>(), 60000L,
 				0, new ArrayList<>(), "DE 56 56 FF", 0));
-		listJoueur.add(new Joueur(3, "Ordinateur", Pion.ORDINATEUR, new ArrayList<>(), 0L,
+		listJoueur.add(new Joueur(3, "Ordinateur", Pion.ORDINATEUR, new ArrayList<>(), 60000L,
 				0, new ArrayList<>(), "DE 56 56 FF", 0));
-		listJoueur.add(new Joueur(4, "Lave vaisselle", Pion.LAVE_VAISSELLE, new ArrayList<>(), 0L,
+		listJoueur.add(new Joueur(4, "Lave vaisselle", Pion.LAVE_VAISSELLE, new ArrayList<>(), 60000L,
 				0, new ArrayList<>(), "DE 56 56 FF", 0));
 
 		//init de liste totale des cases
@@ -38,20 +38,20 @@ public class MonopolyBD {
 		toutesLesCases.get(0).addJoueur(listJoueur.get(1));
 		toutesLesCases.get(0).addJoueur(listJoueur.get(2));
 		toutesLesCases.get(0).addJoueur(listJoueur.get(3));
-		toutesLesCases.add(new Propriete(1, TypeCase.PROPRIETE, "Propriété", "Martigues", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(1, TypeCase.PROPRIETE, "Propriété", "Martigues", 1000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(2, TypeCase.CASE_CAISSE_COMMUNAUTE, "Caisse de Communauté", new ArrayList<>()));
-		toutesLesCases.add(new Propriete(3, TypeCase.PROPRIETE, "Propriété", "Bouchain", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(3, TypeCase.PROPRIETE, "Propriété", "Bouchain", 1000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(4, TypeCase.TAXE_ENERGIE, "Taxe d'énergie", new ArrayList<>()));
 		toutesLesCases.add(new Case(5, TypeCase.SAFE, "Case safe", new ArrayList<>()));
-		toutesLesCases.add(new Propriete(6, TypeCase.PROPRIETE, "Propriété", "Canton du Quesnoy", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(6, TypeCase.PROPRIETE, "Propriété", "Canton du Quesnoy", 2000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(7, TypeCase.CASE_CHANCE, "Case Chance", new ArrayList<>()));
-		toutesLesCases.add(new Propriete(8, TypeCase.PROPRIETE, "Propriété", "Les Barthes", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
-		toutesLesCases.add(new Propriete(9, TypeCase.PROPRIETE, "Propriété", "La Nourais", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(8, TypeCase.PROPRIETE, "Propriété", "Les Barthes", 2000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(9, TypeCase.PROPRIETE, "Propriété", "La Nourais", 2000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(10, TypeCase.VISITE_PRISON, "Visite Prison", new ArrayList<>()));
-		toutesLesCases.add(new Propriete(11, TypeCase.PROPRIETE, "Propriété", "La Rance", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
-		toutesLesCases.add(new Propriete(12, TypeCase.PROPRIETE, "Propriété", "Paimpol-Bréhat", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(11, TypeCase.PROPRIETE, "Propriété", "La Rance", 5000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(12, TypeCase.PROPRIETE, "Propriété", "Paimpol-Bréhat", 5000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(13, TypeCase.BONUS_PRIME_ETAT, "Bonus de prime d'état", new ArrayList<>()));
-		toutesLesCases.add(new Propriete(14, TypeCase.PROPRIETE, "Propriété", "Mafate", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
+		toutesLesCases.add(new Propriete(14, TypeCase.PROPRIETE, "Propriété", "Mafate", 5000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(15, TypeCase.SAFE, "Case safe", new ArrayList<>()));
 		toutesLesCases.add(new Propriete(16, TypeCase.PROPRIETE, "Propriété", "Metz-Chambière", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(17, TypeCase.CASE_CAISSE_COMMUNAUTE, "Caisse de Communauté", new ArrayList<>()));
