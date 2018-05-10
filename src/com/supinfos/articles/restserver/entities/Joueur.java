@@ -8,14 +8,14 @@ public class Joueur {
 	private int id;
     private String nom;
     private Pion pion;
-    private ArrayList<Propriete> listePropriete;
+    private ArrayList<Integer> listePropriete;
     private Long solde;
     private int position;
     private List<Carte> listeCarte;
     private String nfcTag;
     private int nbTourPrison;
     
-    public Joueur(int _id, String _nom, Pion _pion, ArrayList<Propriete> _listePropriete,
+    public Joueur(int _id, String _nom, Pion _pion, ArrayList<Integer> _listePropriete,
     		Long _solde, int _position, List<Carte> _listeCarte, String _nfcTag, int _nbTourPrison) {
     	id = _id;
     	nom = _nom;
@@ -78,18 +78,18 @@ public class Joueur {
 	/**
 	 * @return the listePropriete
 	 */
-	public ArrayList<Propriete> getListePropriete() {
+	public ArrayList<Integer> getListePropriete() {
 		return listePropriete;
 	}
 	
 	/**
 	 * @param listePropriete the listePropriete to set
 	 */
-	public void setListePropriete(ArrayList<Propriete> listePropriete) {
+	public void setListePropriete(ArrayList<Integer> listePropriete) {
 		this.listePropriete = listePropriete;
 	}
 	
-	public void addPropriete(Propriete prop) {
+	public void addPropriete(int prop) {
 		this.listePropriete.add(prop);
 	}
 	

@@ -3,12 +3,12 @@ package com.supinfos.articles.restserver.entities;
 import java.util.List;
 
 public class Case {
-	private long idCase;
+	private int idCase;
 	private TypeCase typeCase;
 	private String nom;
 	private List<Joueur> joueursSurCase;
 
-	public Case(long _idCase, TypeCase _typeCase, String _nom, List<Joueur> _joueursSurCase) {
+	public Case(int _idCase, TypeCase _typeCase, String _nom, List<Joueur> _joueursSurCase) {
 		super();
 		idCase = _idCase;
 		typeCase = _typeCase;
@@ -23,14 +23,14 @@ public class Case {
 	/**
 	 * @return the idCase
 	 */
-	public long getIdCase() {
+	public int getIdCase() {
 		return idCase;
 	}
 
 	/**
 	 * @param idCase the idCase to set
 	 */
-	public void setIdCase(long idCase) {
+	public void setIdCase(int idCase) {
 		this.idCase = idCase;
 	}
 

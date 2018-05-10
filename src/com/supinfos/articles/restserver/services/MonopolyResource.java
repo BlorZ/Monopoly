@@ -103,7 +103,7 @@ public class MonopolyResource {
 		String carte = "";
 		
 		for(Case p : MonopolyBD.getAllCases()) {
-			if(idCase.equals(p.getIdCase())) {
+			if(idCase == p.getIdCase()) {
 				prop = (Propriete) p;
 			}
 		}
@@ -123,15 +123,15 @@ public class MonopolyResource {
 			
 				//traitement coté joueur
 				joueur.setSolde(joueur.getSolde()-prop.getPrixAchat());
-				joueur.addPropriete(prop);
+				joueur.addPropriete(prop.getIdCase());
 				//traitement coté propriete
 				prop.setJoueur(joueur.getId());
 				
-				return Response.ok().build();
+				return Response.ok().header("Access-Control-Allow-Origin", "*").build();
 			}
 		}
 		
-		return Response.notModified().build();
+		return Response.notModified().header("Access-Control-Allow-Origin", "*").build();
 		
 	}
 	
@@ -150,8 +150,6 @@ public class MonopolyResource {
 			throw new Exception("Le lecteur NFC n'a pas démarré correctement.");
 		}
 		
-		Thread.sleep(5000);
-		
 		try {
 			result = Nfc.read();
 		} catch (Exception e) {
@@ -168,7 +166,14 @@ public class MonopolyResource {
 			throw new Exception("Erreur lors de la fermeture du lecteur NFC");
 		}
 		System.out.println(retour);
+		Thread.sleep(1000);
 		//result = Integer.toUnsignedString(retour); ne pas decommenter
+		
+		if (result =="ERROR") {
+			return Response.notModified()
+					.header("Access-Control-Allow-Origin", "*")
+					.build();
+		}
 		return Response.ok(result)
 				.header("Access-Control-Allow-Origin", "*")
 				.build();
@@ -207,7 +212,7 @@ public class MonopolyResource {
 		Case positionCase = new Case();
 		Joueur joueur = new Joueur();
 		for(Case current : MonopolyBD.toutesLesCases) {
-			if(idCase.equals(current.getIdCase())) {
+			if(idCase == current.getIdCase()) {
 				positionCase = current;
 			}
 		}
@@ -220,9 +225,9 @@ public class MonopolyResource {
 		switch(positionCase.getTypeCase()) {
 			case DEPART: 
 				joueur.setSolde(joueur.getSolde() + 20000L);
-				for(Propriete p : joueur.getListePropriete()) {
+				/*for(Propriete p : joueur.getListePropriete()) {
 					joueur.setSolde(joueur.getSolde() - p.getLoyer());
-				}
+				}*/
 				break;
 			case CASE_CHANCE:
 				int random = (int) (Math.random() * MonopolyBD.cartesChance.size());

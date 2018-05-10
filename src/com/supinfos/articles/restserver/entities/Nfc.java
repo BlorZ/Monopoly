@@ -8,7 +8,7 @@ import java.net.URL;
 
 public class Nfc {
 	
-	public static String address[] = {"http://localhost:8081/nfcApp4/api","http://localhost:8081/nfcApp4/api"}; //mettre les bonne adresses
+	public static String address[] = {"http://192.168.43.112:8080/nfcApp4/api","http://localhost:8081/nfcApp4/api"}; //mettre les bonne adresses
 	
 	public static int start() throws IOException {
 		URL url1;

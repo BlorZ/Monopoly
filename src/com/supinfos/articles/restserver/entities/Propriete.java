@@ -9,7 +9,7 @@ public class Propriete extends Case{
 	private Long plusValue;
 	private int idJoueur;
 	
-	public Propriete(long idCase, TypeCase typeCase, String _nomCase, String _nomProp, Long _prixAchat, Long _loyer,
+	public Propriete(int idCase, TypeCase typeCase, String _nomCase, String _nomProp, Long _prixAchat, Long _loyer,
 			Long _plusValue, int _idJoueur, List<Joueur> _joueursSurCase) {
 		super(idCase, typeCase, _nomCase, _joueursSurCase);
 		nomProp =  _nomProp;
