@@ -192,11 +192,11 @@ public class MonopolyResource {
 			}
 		}
 		
-		if(joueur.getPosition() == 99) {
+		if(joueur.getPosition() == 40) {
 			joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
 			if(joueur.getNbTourPrison() >= 3) {
 				joueur.setPosition(10);
-				MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+				MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 				MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 				joueur.setNbTourPrison(0);
 			}
@@ -270,8 +270,8 @@ public class MonopolyResource {
 				}
 				else if(carte.getContenu() == "Allez à la case prison!") {
 					MonopolyBD.toutesLesCases.get(joueur.getPosition()).removeJoueur(joueur);
-					joueur.setPosition(99);
-					MonopolyBD.toutesLesCases.get(99).addJoueur(joueur);
+					joueur.setPosition(40);
+					MonopolyBD.toutesLesCases.get(40).addJoueur(joueur);
 				}
 				else if(carte.getContenu() == "Sortez de prison") {
 					joueur.getListeCarte().add(carte);
@@ -280,8 +280,8 @@ public class MonopolyResource {
 				message = carte.getContenu();
 				break;
 			case ALLER_PRISON: 
-				joueur.setPosition(99);
-				MonopolyBD.toutesLesCases.get(99).addJoueur(joueur);
+				joueur.setPosition(40);
+				MonopolyBD.toutesLesCases.get(40).addJoueur(joueur);
 				message = "Vous allez en prison !";
 				break;
 			case BONUS_PRIME_ETAT:
@@ -343,7 +343,7 @@ public class MonopolyResource {
 		
 		if(joueur.getNbTourPrison() == 3) {
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 			
@@ -363,7 +363,7 @@ public class MonopolyResource {
 		else {
 			joueur.getListeCarte().remove(0);
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 		}
@@ -388,7 +388,7 @@ public class MonopolyResource {
 		
 		if(joueur.getNbTourPrison() == 3) {
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 			
@@ -410,7 +410,7 @@ public class MonopolyResource {
 			joueur.setSolde(joueur.getSolde() - 5000L);
 			MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 5000L);
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 		}
@@ -434,7 +434,7 @@ public class MonopolyResource {
 		
 		if(joueur.getNbTourPrison() == 3) {
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 			
@@ -453,7 +453,7 @@ public class MonopolyResource {
 		}
 		else {
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 		}

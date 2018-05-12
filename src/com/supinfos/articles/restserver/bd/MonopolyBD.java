@@ -77,7 +77,7 @@ public class MonopolyBD {
 		toutesLesCases.add(new Propriete(37, TypeCase.PROPRIETE, "Propriété", "GOLFECH", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
 		toutesLesCases.add(new Case(38, TypeCase.IMPOT_POLUTION, "Impôt de Polution", new ArrayList<>()));
 		toutesLesCases.add(new Propriete(39, TypeCase.PROPRIETE, "Propriété", "Strasbourg", 10000L, 1000L, 5000L, 0, new ArrayList<>()));
-		toutesLesCases.add(new Case(99, TypeCase.PRISON, "Prison", new ArrayList<>()));
+		toutesLesCases.add(new Case(40, TypeCase.PRISON, "Prison", new ArrayList<>()));
 		
 		//contenu des cartes chances
 		cartesChance.add(new Carte(1L, "Sortez de prison", TypeCarte.CHANCE));
