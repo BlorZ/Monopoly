@@ -320,6 +320,18 @@ public class MonopolyResource {
 		joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
 		
 		if(joueur.getNbTourPrison() == 3) {
+			joueur.setPosition(10);
+			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
+			joueur.setNbTourPrison(0);
+			
+			return Response.ok()
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+		}
+		
+		if(joueur.getNbTourPrison() > 3) {
 			throw new Exception("Vous êtes déjà sorti de prison");
 		}
 		
@@ -353,6 +365,18 @@ public class MonopolyResource {
 		joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
 		
 		if(joueur.getNbTourPrison() == 3) {
+			joueur.setPosition(10);
+			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
+			joueur.setNbTourPrison(0);
+			
+			return Response.ok()
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+		}
+		
+		if(joueur.getNbTourPrison() > 3) {
 			throw new Exception("Vous êtes déjà sorti de prison");
 		}
 		
@@ -387,6 +411,18 @@ public class MonopolyResource {
 		joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
 		
 		if(joueur.getNbTourPrison() == 3) {
+			joueur.setPosition(10);
+			MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
+			joueur.setNbTourPrison(0);
+			
+			return Response.ok()
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+		}
+		
+		if(joueur.getNbTourPrison() > 3) {
 			throw new Exception("Vous êtes déjà sorti de prison");
 		}
 		
