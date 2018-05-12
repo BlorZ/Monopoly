@@ -207,8 +207,10 @@ public class MonopolyResource {
 	}
 	
 	@GET
-	@Path("case-speciale/{idCase}")
-	public Response gestionCaseSpeciale(@PathParam("idCase") Long idCase, @QueryParam("idJoueur") Integer idJoueur) throws Exception {
+	@Path("case-speciale/")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response gestionCaseSpeciale(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") Integer idJoueur) throws Exception {
+		String message = "";
 		Case positionCase = new Case();
 		Joueur joueur = new Joueur();
 		for(Case current : MonopolyBD.toutesLesCases) {
@@ -242,6 +244,8 @@ public class MonopolyResource {
 					joueur.setSolde(joueur.getSolde() - 7500L);
 					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 7500L);
 				}
+				
+				message = carte.getContenu();
 				break;
 			case CASE_CAISSE_COMMUNAUTE:
 				random = (int) (Math.random() * MonopolyBD.cartesCaisseCommunaute.size());
@@ -256,23 +260,30 @@ public class MonopolyResource {
 				else if(carte.getContenu() == "Sortez de prison") {
 					joueur.getListeCarte().add(carte);
 				}
+				
+				message = carte.getContenu();
 				break;
 			case ALLER_PRISON: 
 				joueur.setPosition(99);
 				MonopolyBD.toutesLesCases.get(99).addJoueur(joueur);
+				message = "Vous allez en prison !";
 				break;
 			case BONUS_PRIME_ETAT:
 				joueur.setSolde(joueur.getSolde() + 5000L);
+				message = "Vous recevez une prime de l'état de 5000W";
 				break;
 			case BONUS_PRIX_NOBEL:
 				joueur.setSolde(joueur.getSolde() + 10000L);
+				message = "Vous recevez le prix Nobel pour vos recherches et une prime de 10000W";
 				break;
 			case IMPOT_POLUTION:
 				joueur.setSolde(joueur.getSolde() - 7500L);
 				MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 7500L);
+				message = "Impots de pollution : payez 7500W";
 				break;
 			case PARC_GRATUIT:
 				joueur.setSolde(joueur.getSolde() + MonopolyBD.plateau.getPot());
+				message = "Vous remportez le pot de " + MonopolyBD.plateau.getPot() + "W !";
 				MonopolyBD.plateau.setPot(0L);
 				break;
 			case SAFE: 
@@ -280,6 +291,7 @@ public class MonopolyResource {
 			case TAXE_ENERGIE: 
 				joueur.setSolde(joueur.getSolde() - 5000L);
 				MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 5000L);
+				message = "Payez la taxe energie de 5000W";
 				break;
 			case VISITE_PRISON:
 				break;
@@ -292,7 +304,7 @@ public class MonopolyResource {
 		default:
 			throw new Exception("Cette case n'existe pas");
 		}
-		return Response.noContent()
+		return Response.ok(message)
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
