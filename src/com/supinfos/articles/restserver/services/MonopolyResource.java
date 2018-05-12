@@ -279,7 +279,8 @@ public class MonopolyResource {
 				
 				message = carte.getContenu();
 				break;
-			case ALLER_PRISON: 
+			case ALLER_PRISON:
+				MonopolyBD.toutesLesCases.get(joueur.getPosition()).removeJoueur(joueur);
 				joueur.setPosition(40);
 				MonopolyBD.toutesLesCases.get(40).addJoueur(joueur);
 				message = "Vous allez en prison !";
