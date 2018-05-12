@@ -185,10 +185,26 @@ public class MonopolyResource {
 		if(resultDes < 2 || resultDes > 12) {
 			throw new Exception("Il est impossible de faire ce résultats avec 2 dés!!");
 		}
-		Joueur joueur = null;
+		Joueur joueur = new Joueur();
 		for(Joueur j : MonopolyBD.getJoueurs()) {
 			if(idJoueur==j.getId()) {
 				joueur = j;
+			}
+		}
+		
+		if(joueur.getPosition() == 99) {
+			joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
+			if(joueur.getNbTourPrison() >= 3) {
+				joueur.setPosition(10);
+				MonopolyBD.toutesLesCases.get(99).removeJoueur(joueur);
+				MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
+				joueur.setNbTourPrison(0);
+			}
+			else {
+				return Response.notModified()
+						.header("Access-Control-Allow-Origin", "*")
+						.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
 			}
 		}
 		
@@ -227,9 +243,6 @@ public class MonopolyResource {
 		switch(positionCase.getTypeCase()) {
 			case DEPART: 
 				joueur.setSolde(joueur.getSolde() + 20000L);
-				/*for(Propriete p : joueur.getListePropriete()) {
-					joueur.setSolde(joueur.getSolde() - p.getLoyer());
-				}*/
 				break;
 			case CASE_CHANCE:
 				int random = (int) (Math.random() * MonopolyBD.cartesChance.size());
@@ -251,9 +264,12 @@ public class MonopolyResource {
 				random = (int) (Math.random() * MonopolyBD.cartesCaisseCommunaute.size());
 				carte = MonopolyBD.cartesCaisseCommunaute.get(random);
 				if(carte.getContenu() == "Allez à la case départ!") {
+					MonopolyBD.toutesLesCases.get(joueur.getPosition()).removeJoueur(joueur);
 					joueur.setPosition(0);
+					MonopolyBD.toutesLesCases.get(0).addJoueur(joueur);
 				}
 				else if(carte.getContenu() == "Allez à la case prison!") {
+					MonopolyBD.toutesLesCases.get(joueur.getPosition()).removeJoueur(joueur);
 					joueur.setPosition(99);
 					MonopolyBD.toutesLesCases.get(99).addJoueur(joueur);
 				}
@@ -294,12 +310,6 @@ public class MonopolyResource {
 				message = "Payez la taxe energie de 5000W";
 				break;
 			case VISITE_PRISON:
-				break;
-			case PRISON: 
-				//reste a faire
-				// a voir comment on gere le nombre de tour dans le back
-				// comment on gere les dés pour voir si c'est un double
-				// Je pense il faut faire un WS a part pour cette case => le nombre de chaque dé en entrée + le nombre de tour deja en prison 
 				break;
 		default:
 			throw new Exception("Cette case n'existe pas");
@@ -451,5 +461,54 @@ public class MonopolyResource {
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+	}
+	/**
+	 * la transaction se fera a partir du joueur 1 vers le joueur 2
+	 * @param idJoueur1
+	 * @param idJoueur2
+	 * @param montant
+	 * @throws Exception
+	 */
+	@GET
+	@Path("/transaction")
+	public void transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
+			@QueryParam("montant") Long montant) throws Exception {
+		Joueur j1 = new Joueur();
+		Joueur j2 = new Joueur();
+		//on recupere le premier joueur
+		for (Joueur current : MonopolyBD.getJoueurs()) {
+			if (idJoueur1 == current.getId()) {
+				j1 = current;
+			}
+		}
+		//on recupere le deuxieme joueur
+		for (Joueur current : MonopolyBD.getJoueurs()) {
+			if (idJoueur2 == current.getId()) {
+				j2 = current;
+			}
+		}
+		//on verifie la carte du joueur 1
+		String carteNfc1 = readNfc().getEntity().toString();
+		if(!carteNfc1.equals(j1.getNfcTag())) {
+			throw new Exception("Ce n'est pas la carte attendue!");
+		}
+		//on verifie la carte du joueur 2
+		String carteNfc2 = readNfc().getEntity().toString();
+		if(!carteNfc2.equals(j2.getNfcTag())) {
+			throw new Exception("Ce n'est pas la carte attendue!");
+		}
+		//si tout est bon on fait la transaction
+		if(j1.getSolde() < montant) {
+			j1.setEstElimine(true);
+			for(Case p : MonopolyBD.toutesLesCases) {
+				if(((Propriete) p).getIdJoueur() == 1) {
+					((Propriete) p).setJoueur(0);
+				}
+			}
+		}
+		else{
+			j1.setSolde(j1.getSolde() - montant);
+			j2.setSolde(j2.getSolde() + montant);
+		}
 	}
 }

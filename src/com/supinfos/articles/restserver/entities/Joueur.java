@@ -14,9 +14,10 @@ public class Joueur {
     private List<Carte> listeCarte;
     private String nfcTag;
     private int nbTourPrison;
+    private boolean estElimine;
     
     public Joueur(int _id, String _nom, Pion _pion, ArrayList<Integer> _listePropriete,
-    		Long _solde, int _position, List<Carte> _listeCarte, String _nfcTag, int _nbTourPrison) {
+    		Long _solde, int _position, List<Carte> _listeCarte, String _nfcTag, int _nbTourPrison, boolean _estElimine) {
     	id = _id;
     	nom = _nom;
     	pion = _pion; 
@@ -26,6 +27,7 @@ public class Joueur {
     	listeCarte = _listeCarte;
     	nfcTag = _nfcTag;
     	nbTourPrison = _nbTourPrison;
+    	estElimine = _estElimine;
     }
     
     public Joueur() {
@@ -146,4 +148,13 @@ public class Joueur {
 	public void setNbTourPrison(int nbTourPrison) {
 		this.nbTourPrison = nbTourPrison;
 	}
+
+	public boolean isEstElimine() {
+		return estElimine;
+	}
+
+	public void setEstElimine(boolean estElimine) {
+		this.estElimine = estElimine;
+	}
+	
 }
