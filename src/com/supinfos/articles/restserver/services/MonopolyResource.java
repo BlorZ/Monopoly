@@ -471,7 +471,7 @@ public class MonopolyResource {
 	 */
 	@GET
 	@Path("/transaction")
-	public void transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
+	public Response transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
 			@QueryParam("montant") Long montant) throws Exception {
 		Joueur j1 = new Joueur();
 		Joueur j2 = new Joueur();
@@ -510,5 +510,6 @@ public class MonopolyResource {
 			j1.setSolde(j1.getSolde() - montant);
 			j2.setSolde(j2.getSolde() + montant);
 		}
+		return Response.ok().header("Access-Control-Allow-Origin", "*").build();
 	}
 }
