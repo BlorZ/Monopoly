@@ -24,13 +24,13 @@ public class MonopolyBD {
 	static {
 		//initialisation des joueurs
 		listJoueur.add(new Joueur(1, "Micro onde", Pion.MICRO_ONDE, new ArrayList<>(), 60000L,
-				0, new ArrayList<>(),"DE 56 56 FF", 0, false));
+				0, new ArrayList<>(),"04 EE FF 81 A0 22 80", 0, false));
 		listJoueur.add(new Joueur(2, "Grille pain", Pion.GRILLE_PAIN, new ArrayList<>(), 60000L,
-				0, new ArrayList<>(), "DE 56 56 FF", 0, false));
+				0, new ArrayList<>(), "6B 1F CD 18", 0, false));
 		listJoueur.add(new Joueur(3, "Ordinateur", Pion.ORDINATEUR, new ArrayList<>(), 60000L,
-				0, new ArrayList<>(), "DE 56 56 FF", 0, false));
+				0, new ArrayList<>(), "04 E1 E1 5A 53 28 80", 0, false));
 		listJoueur.add(new Joueur(4, "Lave vaisselle", Pion.LAVE_VAISSELLE, new ArrayList<>(), 60000L,
-				0, new ArrayList<>(), "DE 56 56 FF", 0, false));
+				0, new ArrayList<>(), "04 DD E0 5A 53 28 80", 0, false));
 
 		//init de liste totale des cases
 		toutesLesCases.add(new Case(0, TypeCase.DEPART, "Départ", new ArrayList<>()));
