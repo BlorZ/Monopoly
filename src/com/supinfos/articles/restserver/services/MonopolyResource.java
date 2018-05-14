@@ -1,5 +1,7 @@
 package com.supinfos.articles.restserver.services;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -501,10 +503,15 @@ public class MonopolyResource {
 		//si tout est bon on fait la transaction
 		if(j1.getSolde() < montant) {
 			j1.setEstElimine(true);
-			for(Case p : MonopolyBD.toutesLesCases) {
-				if(((Propriete) p).getIdJoueur() == 1) {
-					((Propriete) p).setJoueur(0);
-				}
+			j1.setListePropriete(new ArrayList<>());
+			j1.setListeCarte(new ArrayList<>());
+			j2.setSolde(j2.getSolde() + j1.getSolde());
+			j1.setSolde(0L);
+			
+			//mettre toutes les idJoueurs des proprietes du joueur à 0
+			for (int idProp : j1.getListePropriete()) {
+				Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
+				p.setJoueur(0);
 			}
 		}
 		else{
