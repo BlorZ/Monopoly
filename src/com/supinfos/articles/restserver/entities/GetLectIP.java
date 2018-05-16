@@ -7,7 +7,8 @@ import java.io.InputStreamReader;
 
 public class GetLectIP {
 	
-	static ProcessBuilder builder = new ProcessBuilder("C:\\Users\\croyg\\Desktop\\testip.bat");
+	//static ProcessBuilder builder = new ProcessBuilder("C:\\Users\\croyg\\Desktop\\testip.bat");
+	static ProcessBuilder builder = new ProcessBuilder("/home/pi/Documents/getip.sh");
 	static Process process = null;
 	static BufferedReader reader = null;
 	

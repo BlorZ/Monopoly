@@ -8,8 +8,8 @@ import java.net.URL;
 
 public class Nfc {
 
-	//public static String address[] = {"http://192.168.43.100:8080/nfcApp4/api","http://localhost:8081/nfcApp4/api"}; //mettre les bonne adresses
-	public static String address[] = {"http://"+ GetLectIP.getIP()+":8080/nfcApp4/api","http://localhost:8081/nfcApp4/api"}; //mettre les bonne adresses
+	public static String address[] = {"http://192.168.43.100:8080/nfcApp4/api","http://localhost:8081/nfcApp4/api"}; //mettre les bonne adresses
+	//public static String address[] = {"http://"+ GetLectIP.getIP()+":8080/nfcApp4/api","http://localhost:8081/nfcApp4/api"}; //mettre les bonne adresses
 	
 
 	public static int start() throws IOException {
