@@ -65,7 +65,7 @@ public class MonopolyResource {
 	@Path("/achat")
 	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
 	/**Permet d'acheter une propriete si on a assez d'argent, que la prop est a vendre et qu'on passe sa carte*/
-	public String achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
+	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		Propriete prop = new Propriete();
 		String carte = "";
@@ -94,7 +94,9 @@ public class MonopolyResource {
 				//traitement coté propriete
 				prop.setJoueur(joueur.getId());
 				
-				return "Vous avez acheté la propriété : " + prop.getName();
+				return Response.ok("Vous avez acheté la propriété : " + prop.getName())
+						.header("Access-Control-Allow-Origin", "*")
+						.build();
 			}
 		}
 		if(prop.getIdJoueur() != 0 ) {
@@ -154,7 +156,8 @@ public class MonopolyResource {
 	@GET
 	@Path("/deplacement")
 	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
-	public String deplacement(@QueryParam("idJoueur") long idJoueur, @QueryParam("des1") int des1, @QueryParam("des2") int des2) throws Exception {
+	public Response deplacement(@QueryParam("idJoueur") long idJoueur, @QueryParam("des1") int des1, @QueryParam("des2") int des2) throws Exception {
+		String message = "";
 		if(des1 < 1 || des1 > 6) {
 			throw new Exception("Il est impossible de faire ce résultat avec le 1er dé");
 		}
@@ -186,7 +189,9 @@ public class MonopolyResource {
 				//Ajout pour mettre joueur sur case
 				Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
 				dest.addJoueur(joueur);
-				return "Votre moment en prison est fini, vous passez par la sortie visiteur et avancez de " + resultDes + " cases";
+				message ="Votre moment en prison est fini, vous passez par la sortie visiteur et avancez de " + resultDes + " cases";
+				return Response.ok(message)
+						.header("Access-Control-Allow-Origin", "*").build();
 			}
 			else {
 				//si double, on sort de prison
@@ -202,12 +207,16 @@ public class MonopolyResource {
 					//Ajout pour mettre joueur sur case
 					Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
 					dest.addJoueur(joueur);
-					return "Vous avez fait un double, vous sortez de prison et avancez de " + resultDes + " cases";
+					message = "Vous avez fait un double, vous sortez de prison et avancez de " + resultDes + " cases";
+					return Response.ok(message)
+							.header("Access-Control-Allow-Origin", "*").build();
 				}
 				//si non double, on reste en zonzon
 				else {
 					joueur.setNbTourPrison(joueur.getNbTourPrison() +1);
-					return "Vous restez en prison!";
+					message = "Vous restez en prison!";
+					return Response.ok(message)
+							.header("Access-Control-Allow-Origin", "*").build();
 				}
 			}
 		}
@@ -219,8 +228,9 @@ public class MonopolyResource {
 			Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
 			dest.addJoueur(joueur);
 		}	
-
-		return "Vous avez avancé de " + resultDes + " cases";
+		message = "Vous avez avancé de " + resultDes + " cases";
+		return Response.ok(message)
+				.header("Access-Control-Allow-Origin", "*").build();
 	}
 	
 	@GET
@@ -251,12 +261,12 @@ public class MonopolyResource {
 				if(carte.getContenu() == "Sortez de prison") {
 					joueur.getListeCarte().add(carte);
 				}
-				else if(carte.getContenu() == "Votre campagne de publicité rapporte 5000 watts") {
-					joueur.setSolde(joueur.getSolde() + 5000L);
+				else if(carte.getContenu() == "Votre campagne de publicité rapporte 2000 watts") {
+					joueur.setSolde(joueur.getSolde() + 2000L);
 				}
-				else if(carte.getContenu() == "Un incident s'est produit dans l'une de vos propriétés, payez 7500 watts de réparation") {
-					joueur.setSolde(joueur.getSolde() - 7500L);
-					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 7500L);
+				else if(carte.getContenu() == "Un incident s'est produit dans l'une de vos propriétés, payez 2500 watts de réparation") {
+					joueur.setSolde(joueur.getSolde() - 2500L);
+					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 2500L);
 				}
 				message = carte.getContenu();
 				break;
@@ -281,18 +291,18 @@ public class MonopolyResource {
 			case PRISON:
 				break;
 			case BONUS_PRIME_ETAT:
-				joueur.setSolde(joueur.getSolde() + 5000L);
-				message = "Vous recevez une prime de l'état de 5000W";
+				joueur.setSolde(joueur.getSolde() + 2000L);
+				message = "Vous recevez une prime de l'état de 2000W";
 				break;
 			case BONUS_PRIX_NOBEL:
-				joueur.setSolde(joueur.getSolde() + 10000L);
-				message = "Vous recevez le prix Nobel pour vos recherches et une prime de 10000W";
+				joueur.setSolde(joueur.getSolde() + 5000L);
+				message = "Vous recevez le prix Nobel pour vos recherches et une prime de 5000W";
 				break;
 			case IMPOT_POLUTION:
 				Long impot = 0L;
 				for (int idProp : joueur.getListePropriete()) {
 					Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
-					impot += p.getCoefPollution() * 5000L;
+					impot += p.getCoefPollution() * 500L;
 				}
 				
 				if(joueur.getSolde() < impot) {
@@ -366,7 +376,7 @@ public class MonopolyResource {
 	@GET
 	@Path("carte-prison/{idJoueur}")
 	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
-	public String UseCartePrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
+	public Response UseCartePrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		for (Joueur current : MonopolyBD.getJoueurs()) {
 			if (idJoueur == current.getId()) {
@@ -380,7 +390,9 @@ public class MonopolyResource {
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 			
-			return "Pas besoin d'utiliser votre carte \"Sortie de prison\", vous sortez de prison";
+			return Response.ok("Pas besoin d'utiliser votre carte \"Sortie de prison\", vous sortez de prison")
+					.header("Access-Control-Allow-Origin", "*")
+					.build();
 		}
 		
 		if(joueur.getNbTourPrison() > 3) {
@@ -398,13 +410,15 @@ public class MonopolyResource {
 			joueur.setNbTourPrison(0);
 		}
 		
-		return "Vous avez utilisé votre carte \"Sortie de prison\" ";
+		return Response.ok("Vous avez utilisé votre carte \"Sortie de prison\" ")
+				.header("Access-Control-Allow-Origin", "*")
+				.build();
 	}
 	
 	@GET
 	@Path("amande-prison/{idJoueur}")
 	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
-	public String payerPrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
+	public Response payerPrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		for (Joueur current : MonopolyBD.getJoueurs()) {
 			if (idJoueur == current.getId()) {
@@ -420,7 +434,9 @@ public class MonopolyResource {
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 			
-			return "Pas besoin de payer l'amende, vous sortez de prison";
+			return Response.ok("Pas besoin de payer l'amende, vous sortez de prison")
+					.header("Access-Control-Allow-Origin", "*")
+					.build();
 		}
 		
 		if(joueur.getSolde() < 5000) {
@@ -434,7 +450,9 @@ public class MonopolyResource {
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 		}
-		return "Vous avez payé l'amende de 5000W, vous sortez de prison";
+		return Response.ok("Vous avez payé l'amende de 5000W, vous sortez de prison")
+				.header("Access-Control-Allow-Origin", "*")
+				.build();
 	}
 	
 	/**
@@ -446,8 +464,10 @@ public class MonopolyResource {
 	 */
 	@GET
 	@Path("/transaction")
-	public String transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
+	public Response transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
 			@QueryParam("montant") Long montant) throws Exception {
+		
+		String message= "";
 		Joueur j1 = new Joueur();
 		Joueur j2 = new Joueur();
 		//on recupere le premier joueur
@@ -485,13 +505,18 @@ public class MonopolyResource {
 				Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
 				p.setJoueur(0);
 			}
-			
-			return "Le joueur " + j1.getNom() + " n'a pas assez d'argent pour payer le loyer au joueur " + j2.getNom() + ". Il est donc éliminé de la partie";
+			message = "Le joueur " + j1.getNom() + " n'a pas assez d'argent pour payer le loyer au joueur " + j2.getNom() + ". Il est donc éliminé de la partie";
+			return Response.ok(message)
+					.header("Access-Control-Allow-Origin", "*")
+					.build();
 		}
 		else{
 			j1.setSolde(j1.getSolde() - montant);
 			j2.setSolde(j2.getSolde() + montant);
 		}
-		return "Le joueur " + j1.getNom() + " a versé " + montant + "W au joueur " + j2.getNom();
+		message = "Le joueur " + j1.getNom() + " a versé " + montant + "W au joueur " + j2.getNom();
+		return Response.ok(message)
+				.header("Access-Control-Allow-Origin", "*")
+				.build();
 	}
 }
