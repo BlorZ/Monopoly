@@ -464,6 +464,7 @@ public class MonopolyResource {
 	 */
 	@GET
 	@Path("/transaction")
+	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
 	public Response transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
 			@QueryParam("montant") Long montant) throws Exception {
 
@@ -485,34 +486,27 @@ public class MonopolyResource {
 		//on verifie la carte du joueur 1
 		String carteNfc1 = readNfc().getEntity().toString();
 		if(carteNfc1.equals(j1.getNfcTag())) {
-			//on verifie la carte du joueur 2
-			String carteNfc2 = readNfc().getEntity().toString();
-			if(!carteNfc2.equals(j2.getNfcTag())) {
-				//si tout est bon on fait la transaction
-				if(j1.getSolde() < montant) {
-					j1.setEstElimine(true);
-					j1.setListePropriete(new ArrayList<>());
-					j1.setListeCarte(new ArrayList<>());
-					j2.setSolde(j2.getSolde() + j1.getSolde());
-					j1.setSolde(0L);
+			//si tout est bon on fait la transaction
+			if(j1.getSolde() < montant) {
+				j1.setEstElimine(true);
+				j1.setListePropriete(new ArrayList<>());
+				j1.setListeCarte(new ArrayList<>());
+				j2.setSolde(j2.getSolde() + j1.getSolde());
+				j1.setSolde(0L);
 
-					//mettre toutes les idJoueurs des proprietes du joueur à 0
-					for (int idProp : j1.getListePropriete()) {
-						Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
-						p.setJoueur(0);
-					}
-					message = "Le joueur " + j1.getNom() + " n'a pas assez d'argent pour payer le loyer au joueur " + j2.getNom() + ". Il est donc éliminé de la partie";
-					return Response.ok(message)
-							.header("Access-Control-Allow-Origin", "*")
-							.build();
+				//mettre toutes les idJoueurs des proprietes du joueur à 0
+				for (int idProp : j1.getListePropriete()) {
+					Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
+					p.setJoueur(0);
 				}
-				else{
-					j1.setSolde(j1.getSolde() - montant);
-					j2.setSolde(j2.getSolde() + montant);
-				}
+				message = "Le joueur " + j1.getNom() + " n'a pas assez d'argent pour payer le loyer au joueur " + j2.getNom() + ". Il est donc éliminé de la partie";
+				return Response.ok(message)
+						.header("Access-Control-Allow-Origin", "*")
+						.build();
 			}
-			else {
-				throw new Exception("carte 2 n'est pas la bonne");
+			else{
+				j1.setSolde(j1.getSolde() - montant);
+				j2.setSolde(j2.getSolde() + montant);
 			}
 		}
 		else {
