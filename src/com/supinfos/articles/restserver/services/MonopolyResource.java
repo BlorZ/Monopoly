@@ -62,44 +62,10 @@ public class MonopolyResource {
 	}
 
 	@GET
-	@Path("/proprietes/updateplusvalue")
-	public Response updatePlusValuePropriete(@QueryParam("nom") String nom, @QueryParam("plusValue") Long plusValue) throws Exception {
-
-		for (Case current : MonopolyBD.getAllCases()) {
-			if (nom.equals(((Propriete) current).getName())) {
-				((Propriete) current).setPlusValue(plusValue);
-				System.out.println("Propriété modifiée");
-				return Response.noContent()
-						.header("Access-Control-Allow-Origin", "*")
-						.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
-			}
-		}
-		throw new Exception("Cette propriete n'existe pas!");
-		
-	}
-
-	@GET
-	@Path("/proprietes/updateloyer")
-	public Response updateLoyerPropriete(@QueryParam("nom") String nom, @QueryParam("loyer") Long loyer) throws Exception {
-
-		for (Case current : MonopolyBD.getAllCases()) {
-			if (nom.equals(((Propriete) current).getName())) {
-				((Propriete) current).setLoyer(loyer);
-				System.out.println("Propriété modifiée");
-				return Response.noContent()
-						.header("Access-Control-Allow-Origin", "*")
-						.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
-			}
-		}
-		throw new Exception("Cette propriete n'existe pas!");
-	}
-
-	@GET
 	@Path("/achat")
+	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
 	/**Permet d'acheter une propriete si on a assez d'argent, que la prop est a vendre et qu'on passe sa carte*/
-	public Response achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
+	public String achatPropriete(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") int idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		Propriete prop = new Propriete();
 		String carte = "";
@@ -119,7 +85,6 @@ public class MonopolyResource {
 			
 			//Lecture carte nfc
 			carte = readNfc().getEntity().toString();
-			//System.out.println(carte);
 			
 			if (carte.equals(joueur.getNfcTag())) {
 			
@@ -129,17 +94,22 @@ public class MonopolyResource {
 				//traitement coté propriete
 				prop.setJoueur(joueur.getId());
 				
-				return Response.ok().header("Access-Control-Allow-Origin", "*").build();
+				return "Vous avez acheté la propriété : " + prop.getName();
 			}
 		}
+		if(prop.getIdJoueur() != 0 ) {
+			throw new Exception("La propriété appartient déjà à quelqu'un d'autre");
+		}
+		if(joueur.getSolde() >= prop.getPrixAchat() ) {
+			throw new Exception("Vous n'avez pas assez d'argent pour acheter cette propiété");
+		}
 		
-		return Response.notModified().header("Access-Control-Allow-Origin", "*").build();
-		
+		throw new Exception("Une erreur est survenue");
 	}
 	
 	@GET
 	@Path("/readNfc")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
 	public Response readNfc() throws Exception {
 		String result = "";
 		int retour = 0;
@@ -183,10 +153,20 @@ public class MonopolyResource {
 	
 	@GET
 	@Path("/deplacement")
-	public Response deplacement(@QueryParam("idJoueur") long idJoueur, @QueryParam("resultDes") int resultDes) throws Exception {
-		if(resultDes < 2 || resultDes > 12) {
-			throw new Exception("Il est impossible de faire ce résultats avec 2 dés!!");
+	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
+	public String deplacement(@QueryParam("idJoueur") long idJoueur, @QueryParam("des1") int des1, @QueryParam("des2") int des2) throws Exception {
+		if(des1 < 1 || des1 > 6) {
+			throw new Exception("Il est impossible de faire ce résultat avec le 1er dé");
 		}
+		if(des2 < 1 || des2 > 6) {
+			throw new Exception("Il est impossible de faire ce résultat avec le 2e dé");
+		}
+		if(des1 + des2 < 2 || des1 + des2 > 12) {
+			throw new Exception("Il est impossible de faire ce résultat avec 2 dés");
+		}
+		
+		int resultDes = des1 + des2;
+		
 		Joueur joueur = new Joueur();
 		for(Joueur j : MonopolyBD.getJoueurs()) {
 			if(idJoueur==j.getId()) {
@@ -194,39 +174,58 @@ public class MonopolyResource {
 			}
 		}
 		
-		if(joueur.getPosition() == 40) {
-			joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
+		if(joueur.getPosition() == 30) {
 			if(joueur.getNbTourPrison() >= 3) {
 				joueur.setPosition(10);
-				MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
+				MonopolyBD.toutesLesCases.get(30).removeJoueur(joueur);
 				MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 				joueur.setNbTourPrison(0);
+				//on fait avancer le joueur
+				MonopolyBD.getCaseById(joueur.getPosition()).removeJoueur(joueur);
+				joueur.setPosition((joueur.getPosition() + resultDes) % 40);
+				//Ajout pour mettre joueur sur case
+				Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
+				dest.addJoueur(joueur);
+				return "Votre moment en prison est fini, vous passez par la sortie visiteur et avancez de " + resultDes + " cases";
 			}
 			else {
-				return Response.notModified()
-						.header("Access-Control-Allow-Origin", "*")
-						.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+				//si double, on sort de prison
+				if(des1 == des2) {
+					//on met le joueur a la case visite prison
+					joueur.setPosition(10);
+					MonopolyBD.toutesLesCases.get(30).removeJoueur(joueur);
+					MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
+					joueur.setNbTourPrison(0);
+					//on fait avancer le joueur
+					MonopolyBD.getCaseById(joueur.getPosition()).removeJoueur(joueur);
+					joueur.setPosition((joueur.getPosition() + resultDes) % 40);
+					//Ajout pour mettre joueur sur case
+					Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
+					dest.addJoueur(joueur);
+					return "Vous avez fait un double, vous sortez de prison et avancez de " + resultDes + " cases";
+				}
+				//si non double, on reste en zonzon
+				else {
+					joueur.setNbTourPrison(joueur.getNbTourPrison() +1);
+					return "Vous restez en prison!";
+				}
 			}
 		}
-		
-		MonopolyBD.getCaseById(joueur.getPosition()).removeJoueur(joueur);
-		
-		joueur.setPosition((joueur.getPosition() + resultDes) % 40);
-		//Ajout pour mettre joueur sur case
-		Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
-		dest.addJoueur(joueur);
-		
+		else {
+			MonopolyBD.getCaseById(joueur.getPosition()).removeJoueur(joueur);
+			
+			joueur.setPosition((joueur.getPosition() + resultDes) % 40);
+			//Ajout pour mettre joueur sur case
+			Case dest = MonopolyBD.getCaseById((joueur.getPosition()));
+			dest.addJoueur(joueur);
+		}	
 
-		return Response.ok()
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+		return "Vous avez avancé de " + resultDes + " cases";
 	}
 	
 	@GET
 	@Path("case-speciale/")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
 	public Response gestionCaseSpeciale(@QueryParam("idCase") Long idCase, @QueryParam("idJoueur") Integer idJoueur) throws Exception {
 		String message = "";
 		Case positionCase = new Case();
@@ -244,7 +243,7 @@ public class MonopolyResource {
 		}
 		switch(positionCase.getTypeCase()) {
 			case DEPART: 
-				joueur.setSolde(joueur.getSolde() + 20000L);
+				joueur.setSolde(joueur.getSolde() + 2000L);
 				break;
 			case CASE_CHANCE:
 				int random = (int) (Math.random() * MonopolyBD.cartesChance.size());
@@ -259,7 +258,6 @@ public class MonopolyResource {
 					joueur.setSolde(joueur.getSolde() - 7500L);
 					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 7500L);
 				}
-				
 				message = carte.getContenu();
 				break;
 			case CASE_CAISSE_COMMUNAUTE:
@@ -272,20 +270,15 @@ public class MonopolyResource {
 				}
 				else if(carte.getContenu() == "Allez à la case prison!") {
 					MonopolyBD.toutesLesCases.get(joueur.getPosition()).removeJoueur(joueur);
-					joueur.setPosition(40);
-					MonopolyBD.toutesLesCases.get(40).addJoueur(joueur);
+					joueur.setPosition(30);
+					MonopolyBD.toutesLesCases.get(30).addJoueur(joueur);
 				}
 				else if(carte.getContenu() == "Sortez de prison") {
 					joueur.getListeCarte().add(carte);
 				}
-				
 				message = carte.getContenu();
 				break;
-			case ALLER_PRISON:
-				MonopolyBD.toutesLesCases.get(joueur.getPosition()).removeJoueur(joueur);
-				joueur.setPosition(40);
-				MonopolyBD.toutesLesCases.get(40).addJoueur(joueur);
-				message = "Vous allez en prison !";
+			case PRISON:
 				break;
 			case BONUS_PRIME_ETAT:
 				joueur.setSolde(joueur.getSolde() + 5000L);
@@ -296,9 +289,31 @@ public class MonopolyResource {
 				message = "Vous recevez le prix Nobel pour vos recherches et une prime de 10000W";
 				break;
 			case IMPOT_POLUTION:
-				joueur.setSolde(joueur.getSolde() - 7500L);
-				MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 7500L);
-				message = "Impots de pollution : payez 7500W";
+				Long impot = 0L;
+				for (int idProp : joueur.getListePropriete()) {
+					Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
+					impot += p.getCoefPollution() * 5000L;
+				}
+				
+				if(joueur.getSolde() < impot) {
+					joueur.setEstElimine(true);
+					joueur.setListePropriete(new ArrayList<>());
+					joueur.setListeCarte(new ArrayList<>());
+					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + joueur.getSolde());
+					joueur.setSolde(0L);
+					
+					//mettre toutes les idJoueurs des proprietes du joueur à 0
+					for (int idProp : joueur.getListePropriete()) {
+						Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
+						p.setJoueur(0);
+					}
+				}
+				else {
+					joueur.setSolde(joueur.getSolde() - impot);
+					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + impot);
+				}
+				
+				message = "Impots de pollution : payez " + impot + "W";
 				break;
 			case PARC_GRATUIT:
 				joueur.setSolde(joueur.getSolde() + MonopolyBD.plateau.getPot());
@@ -308,9 +323,27 @@ public class MonopolyResource {
 			case SAFE: 
 				break;
 			case TAXE_ENERGIE: 
-				joueur.setSolde(joueur.getSolde() - 5000L);
-				MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 5000L);
-				message = "Payez la taxe energie de 5000W";
+				Long taxe = 0L;
+				int nbProp = joueur.getListePropriete().size();
+				taxe = 500L * nbProp;
+				if(joueur.getSolde() < taxe) {
+					joueur.setEstElimine(true);
+					joueur.setListePropriete(new ArrayList<>());
+					joueur.setListeCarte(new ArrayList<>());
+					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + joueur.getSolde());
+					joueur.setSolde(0L);
+					
+					//mettre toutes les idJoueurs des proprietes du joueur à 0
+					for (int idProp : joueur.getListePropriete()) {
+						Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
+						p.setJoueur(0);
+					}
+				}
+				else {
+					joueur.setSolde(joueur.getSolde() - taxe);
+					MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + taxe);
+					message = "Payez la taxe énergie de " + taxe + "W";
+				}
 				break;
 			case VISITE_PRISON:
 				break;
@@ -318,9 +351,7 @@ public class MonopolyResource {
 			throw new Exception("Cette case n'existe pas");
 		}
 		return Response.ok(message)
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+				.header("Access-Control-Allow-Origin", "*").build();
 	}
 	
 	@GET
@@ -334,7 +365,8 @@ public class MonopolyResource {
 	
 	@GET
 	@Path("carte-prison/{idJoueur}")
-	public Response UseCartePrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
+	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
+	public String UseCartePrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		for (Joueur current : MonopolyBD.getJoueurs()) {
 			if (idJoueur == current.getId()) {
@@ -342,18 +374,13 @@ public class MonopolyResource {
 			}
 		}
 		
-		joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
-		
 		if(joueur.getNbTourPrison() == 3) {
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(30).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 			
-			return Response.ok()
-					.header("Access-Control-Allow-Origin", "*")
-					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+			return "Pas besoin d'utiliser votre carte \"Sortie de prison\", vous sortez de prison";
 		}
 		
 		if(joueur.getNbTourPrison() > 3) {
@@ -366,20 +393,18 @@ public class MonopolyResource {
 		else {
 			joueur.getListeCarte().remove(0);
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(30).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 		}
 		
-		return Response.ok()
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+		return "Vous avez utilisé votre carte \"Sortie de prison\" ";
 	}
 	
 	@GET
 	@Path("amande-prison/{idJoueur}")
-	public Response PayerPrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
+	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
+	public String payerPrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
 		for (Joueur current : MonopolyBD.getJoueurs()) {
 			if (idJoueur == current.getId()) {
@@ -391,80 +416,27 @@ public class MonopolyResource {
 		
 		if(joueur.getNbTourPrison() == 3) {
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
+			MonopolyBD.toutesLesCases.get(30).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 			
-			return Response.ok()
-					.header("Access-Control-Allow-Origin", "*")
-					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+			return "Pas besoin de payer l'amende, vous sortez de prison";
 		}
-		
-		if(joueur.getNbTourPrison() > 3) {
-			throw new Exception("Vous êtes déjà sorti de prison");
-		}
-		
 		
 		if(joueur.getSolde() < 5000) {
-			throw new Exception("Vous n'avez pas assez d'argent pour payer l'amande de sortie de prison(5000 Watts)");
+			throw new Exception("Vous n'avez pas assez d'argent pour payer l'amende de sortie de prison(5000 Watts)");
 		}
 		else {
 			joueur.setSolde(joueur.getSolde() - 5000L);
 			MonopolyBD.plateau.setPot(MonopolyBD.plateau.getPot() + 5000L);
+			MonopolyBD.toutesLesCases.get(30).removeJoueur(joueur);
 			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
 			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
 			joueur.setNbTourPrison(0);
 		}
-		return Response.ok()
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+		return "Vous avez payé l'amende de 5000W, vous sortez de prison";
 	}
 	
-	@GET
-	@Path("double-prison/{idJoueur}")
-	public Response doublePrison(@PathParam("idJoueur") Long idJoueur, @QueryParam("des1") int des1, @QueryParam("des2") int des2) throws Exception {
-		Joueur joueur = new Joueur();
-		for (Joueur current : MonopolyBD.getJoueurs()) {
-			if (idJoueur == current.getId()) {
-				joueur = current;
-			}
-		}
-		
-		joueur.setNbTourPrison(joueur.getNbTourPrison() + 1);
-		
-		if(joueur.getNbTourPrison() == 3) {
-			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
-			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
-			joueur.setNbTourPrison(0);
-			
-			return Response.ok()
-					.header("Access-Control-Allow-Origin", "*")
-					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
-		}
-		
-		if(joueur.getNbTourPrison() > 3) {
-			throw new Exception("Vous êtes déjà sorti de prison");
-		}
-		
-		if(des1 != des2) {
-			throw new Exception("Vous n'avez pas fait de double");
-		}
-		else {
-			joueur.setPosition(10);
-			MonopolyBD.toutesLesCases.get(40).removeJoueur(joueur);
-			MonopolyBD.toutesLesCases.get(10).addJoueur(joueur);
-			joueur.setNbTourPrison(0);
-		}
-		return Response.ok()
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
-	}
 	/**
 	 * la transaction se fera a partir du joueur 1 vers le joueur 2
 	 * @param idJoueur1
@@ -474,7 +446,7 @@ public class MonopolyResource {
 	 */
 	@GET
 	@Path("/transaction")
-	public Response transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
+	public String transaction(@QueryParam("idJoueur1") Integer idJoueur1, @QueryParam("idJoueur2") Integer idJoueur2,
 			@QueryParam("montant") Long montant) throws Exception {
 		Joueur j1 = new Joueur();
 		Joueur j2 = new Joueur();
@@ -492,13 +464,13 @@ public class MonopolyResource {
 		}
 		//on verifie la carte du joueur 1
 		String carteNfc1 = readNfc().getEntity().toString();
-		if(!carteNfc1.equals(j1.getNfcTag())) {
-			throw new Exception("Ce n'est pas la carte attendue!");
+		while(!carteNfc1.equals(j1.getNfcTag())) {
+			//boucle vide juste pour vérifier  que la carte nfc est bonne 
 		}
 		//on verifie la carte du joueur 2
 		String carteNfc2 = readNfc().getEntity().toString();
-		if(!carteNfc2.equals(j2.getNfcTag())) {
-			throw new Exception("Ce n'est pas la carte attendue!");
+		while(!carteNfc2.equals(j2.getNfcTag())) {
+			//boucle vide juste pour vérifier  que la carte nfc est bonne 
 		}
 		//si tout est bon on fait la transaction
 		if(j1.getSolde() < montant) {
@@ -513,11 +485,13 @@ public class MonopolyResource {
 				Propriete p = (Propriete) MonopolyBD.getCaseById(idProp);
 				p.setJoueur(0);
 			}
+			
+			return "Le joueur " + j1.getNom() + " n'a pas assez d'argent pour payer le loyer au joueur " + j2.getNom() + ". Il est donc éliminé de la partie";
 		}
 		else{
 			j1.setSolde(j1.getSolde() - montant);
 			j2.setSolde(j2.getSolde() + montant);
 		}
-		return Response.ok().header("Access-Control-Allow-Origin", "*").build();
+		return "Le joueur " + j1.getNom() + " a versé " + montant + "W au joueur " + j2.getNom();
 	}
 }
