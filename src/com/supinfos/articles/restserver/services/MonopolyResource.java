@@ -416,7 +416,7 @@ public class MonopolyResource {
 	}
 	
 	@GET
-	@Path("amande-prison/{idJoueur}")
+	@Path("amende-prison/{idJoueur}")
 	@Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
 	public Response payerPrison(@PathParam("idJoueur") Long idJoueur) throws Exception {
 		Joueur joueur = new Joueur();
